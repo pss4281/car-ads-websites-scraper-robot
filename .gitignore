@@ -1,0 +1,5 @@
+database.yml
+# OS generated files
+images/*/*.*
+images/
+log
