@@ -1,0 +1,329 @@
+setup:
+  domain: http://www.VeryCoolCarsAdsWebsite.com
+  init_url: "http://www.VeryCoolCarsAdsWebsite.com/list"
+  pagination_param: "&page=<<<page>>>" #will be appended to init_url with <<<page>>> replaced to actual value of the current page
+  name: VeryCoolCarsAdsWebsite
+  profile_name: 'VeryCoolCarsAdsWebsite'
+  item_block_selector: '//article[contains(@class, "ListItem")]'
+  item_urls_selector: './div[@class="srp-description "]/h3[@class="title"]/a/@href'
+  item_urls_type: "path" #or "path"
+  proxy: 999
+  proxy_force: "#xxxCaptcha" # if this element is found on the page script will switch proxy
+  break_condition:
+    total_pages_selector: '//div[@class="pagination"]/a[last()-1]'
+  wait: 0
+  item_block_price_selector: './div[contains(@class, "item-price")]'
+  item_block_price_selector_regexp: !ruby/regexp /\d{1,}.\d{1,}/
+  item_block_price_apply_methods:  
+    gsub: ['.', '']
+
+data:
+  #base: manufacturer
+  suffix:
+    required: 0
+    selector: "//div[@id='banner-wrapper']/preceding-sibling::script[1]"
+    type: "string"
+    regexp: !ruby/regexp /manufacturer = ['](.{1,})[']/
+    regexp_group: 1
+
+  #base: model
+  name:
+    required: 0
+    selector: "//div[@id='banner-wrapper']/preceding-sibling::script[1]"
+    type: "string"
+    regexp: !ruby/regexp /model = ['](.{1,})[']/
+    regexp_group: 1
+    apply_methods: 
+      gsub: ['+', ' ']
+
+  trim:
+    required: 0
+    selector: '//h1[@id="itemTitle"]/text()[last()]'
+    type: "string"
+    regexp: !ruby/regexp /^ (.{1,}) \dd?\r\n/
+    regexp_group: 1
+
+  year:
+    required: 0
+    selector: '//section[@id="itemYear"]/p/span[last()]'
+    type: "string"
+
+  fuel:
+    required: 0
+    type: "string"
+    selector: "//div[@id='banner-wrapper']/preceding-sibling::script[1]"
+    regexp: !ruby/regexp /fueltype = ['](.{1,})[']/
+    regexp_group: 1
+    rewrite_values:
+      Gas: 1
+      Diesel: 2
+      Electric: 3
+      Biodiesel: 4
+
+  hp:
+    required: 0
+    selector: '//table[@class="type1"]/tr[3]/td[3]'
+    type: "string"
+    regexp: !ruby/regexp /^(\d{1,}).{1,}\//
+    regexp_group: 1
+
+  nm:
+    required: 0
+    selector: '//table[@class="type1"]/tr[3]/td[3]'
+    type: "string"
+    regexp: !ruby/regexp /\/ (\d{1,}).{1,}$/
+    regexp_group: 1
+
+  acceleration:
+    required: 0
+    selector: '//div[@class="accordion-b"][1]/table/tr[4]/td[3]'
+    type: "string"
+    digit_or_null: true
+    apply_methods: 
+      gsub: [',', '.']
+
+  speed:
+    selector: '//table[@class="type1"]/tr[5]/td[3]'
+    type: "string"
+    regexp: !ruby/regexp /^\d{1,}/
+
+  kml:
+    required: 0
+    selector: '//table[@class="type1"]/tr[6]/td[3]'
+    type: "string"
+    regexp: !ruby/regexp /^\d{1,}[,]?\d{1,}/
+    apply_methods: 
+      gsub: [',', '.']
+
+  width:
+    required: 0
+    selector: '//table[@class="type1"]/tr[7]/td[3]'
+    type: "string"
+    regexp: !ruby/regexp /^\d{1,}/
+
+  length:
+    required: 0
+    selector: '//table[@class="type1"]/tr[8]/td[3]'
+    type: "string"
+    regexp: !ruby/regexp /^\d{1,}/
+
+  height:
+    required: 0
+    selector: '//table[@class="type1"]/tr[9]/td[3]'
+    type: "string"
+    regexp: !ruby/regexp /^\d{1,}/
+
+  load_capacity:
+    required: 0
+    selector: '//table[@class="type1"]/tr[10]/td[3]'
+    type: "string"
+    regexp: !ruby/regexp /^\d[.]?\d{1,}/
+    
+  traction_wheel:
+    required: 0
+    selector: '//table[@class="type1"]/tr[11]/td[3]'
+    type: "string"
+    rewrite_values:
+      Forward: 1
+      Rear: 2
+      All: 3
+      '-': 
+
+  canisters:
+    required: 0
+    selector: '//div[@class="accordion-b"][1]/table/tr[12]/td[3]'
+    type: "string"
+    digit_or_null: true
+
+  tow_capacity:
+    required: 0
+    selector: '//div[@class="accordion-b"][1]/table/tr[14]/td[3]'
+    type: "string"
+    regexp: !ruby/regexp /^\d{1,}[.]?\d{1,}/
+    apply_methods: 
+      gsub: ['.', '']
+
+  tank:
+    required: 0
+    selector: '//div[@class="accordion-b"][1]/table/tr[17]/td[3]'
+    type: "string"
+    regexp: !ruby/regexp /^\d{1,}/
+
+  transmission:
+    required: 0
+    selector: '//table[@class="type1"]/tr[18]/td[3]'
+    type: "string"
+    regexp: !ruby/regexp /^\d{1,}/
+
+  transmission_type:
+    required: 0
+    default: 
+    selector: '//div[@class="accordion-b"][1]/table/tr[19]/td[3]'
+    type: "string"
+    rewrite_values:
+      Manuel: 1
+      Automatisk: 2
+
+  weight:
+    required: 0
+    selector: '//table[@class="type1"]/tr[20]/td[3]'
+    type: "string"
+    regexp: !ruby/regexp /^\d[.]?\d{1,}/
+
+  doors:
+    required: 0
+    selector: '//div[@class="accordion-b"][1]/table/tr[21]/td[3]'
+    type: "string"
+    digit_or_null: true
+
+  #base: color
+  color:
+    required: 0
+    selector: '//ul[@id="itemDescription"]/li[@title="Color"]/text()[last()]'
+    type: "string"
+    regexp: !ruby/regexp /[^ ].{1,}$/i
+
+  service:
+    required: 0
+    selector: ""
+    type: "string"
+
+  mileage:
+    required: 0
+    selector: '//section[@id="itemMileage"]/p/span[@class="value"]'
+    type: "string"
+    apply_methods: 
+      gsub: ['.', ''] 
+
+  mileage_at_service:
+    required: 0
+    selector: '//ul[@id="itemDescription"]/li/span[text() = "Service v."]/ancestor::li[1]/text()[last()]'
+    type: "string"
+    regexp: !ruby/regexp /^ (.{1,})/
+    regexp_group: 1
+
+  note:
+    required: 0
+    selector: '//*[@id="itemDescription"]/p'
+    type: "string"
+
+  taxed:
+    required: 0
+    default: 1
+    selector: '//span[@id="itemSalePrice"]'
+    regexp: !ruby/regexp /Sale Price/
+    rewrite_values:
+      'Uden afgift': 0
+
+  registered_at:
+    required: 0
+    selector: '//ul[@id="itemDescription"]/li/span[text() = "Indreg."]/ancestor::li[1]/text()[last()]'
+    type: "date"
+    regexp: !ruby/regexp /^ (.{1,})/
+    regexp_group: 1
+
+  service_at:
+    required: 0
+    selector: '//ul[@id="itemDescription"]/li/span[text() = "Synet:"]/ancestor::li[1]/text()[last()]'
+    type: "date"
+    regexp: !ruby/regexp /^ (.{1,})/
+    regexp_group: 1
+
+  #base: vehicle_price
+  model_price:
+    required: 0
+    selector: '//table[@class="type1"]/tr[2]/td[3]'
+    type: "string"
+    digit_or_null: true
+    regexp: !ruby/regexp /^\S{1,}/
+    apply_methods:
+      gsub: ['.', '']
+
+  price:
+    required: 0
+    selector: '//*[@id="itemPrice"]//span[@class="value"]'
+    type: "string"
+    apply_methods: 
+      gsub: ['.', '']
+
+  #base: vehicle_equipment
+  equipment:
+    required: 0
+    selector: '//*[@id="itemEquipment"]/ul/li'
+    type: "array" #array to make it find all tags?
+
+  #base: dealer
+  dealer_name:
+    required: 0
+    selector: '//*[@class="address"]/div[2]/a/h4'
+    type: "string" 
+
+  email:
+    required: 0
+    selector: ""
+    type: "string"
+
+  phone:
+    required: 0
+    selector: '//*[@class="phoneNumbers"]/div[2]/a[1]'
+    type: "string"
+
+  phone_alt:
+    required: 0
+    selector: '//*[@class="phoneNumbers"]/div[2]/a[2]'
+    type: "string"
+
+  street_name:
+    required: 0
+    selector: '//*[@class="address"]/div[2]/a/span[1]'
+    type: "string"
+    regexp: !ruby/regexp /(\S[\D]{1,}) \d{2,}/
+    regexp_group: 1
+
+  street_number:
+    required: 0
+    selector: '//*[@class="address"]/div[2]/a/span[1]'
+    type: "string"
+    regexp: !ruby/regexp /(\d{1,})/
+    regexp_group: 1
+      
+  street_letter:
+    required: 0
+    selector: ""
+    type: "string"
+      
+  floor:
+    required: 0
+    selector: ""
+    type: "string"
+      
+  side:
+    required: 0
+    selector: ""
+    type: "string"
+
+  zip:
+    required: 0
+    selector: '//*[@class="address"]/div[2]/a/span[2]'
+    type: "string"
+    regexp: !ruby/regexp /\d{1,}/
+
+  web:
+    required: 0
+    selector: '//li[@class="logo"]/a[@class="content"]/@href'
+    type: "string"
+
+  fax:
+    required: 0
+    selector: ""
+    type: "string"
+
+  dealer_type:
+    default: 1
+
+  #base: vehicle_image
+  images:
+    selector: '//figure[@id="item-galery"]/a/img/@data-src'
+    url_type: "url" #or "path"
+    custom_uri_params: "?height=600&width=800"
+    type: "array"
